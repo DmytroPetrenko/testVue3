@@ -1,5 +1,5 @@
 <template>
-	<div class="container">
+	<div v-if="currentUser" class="container">
 		<header class="jumbotron">
 			<h3>
 				<strong>{{ currentUser.username }}</strong> Profile
@@ -25,22 +25,21 @@
 	</div>
 </template>
 
-<script>
-import { mapState } from "pinia"
+<script lang="ts">
+import { defineComponent, onMounted } from "vue"
+import { useRouter } from "vue-router"
 import { useLoggedInUserStore } from "@/store/loggedInUser"
-export default {
-	name: "Profile",
-	computed: {
-		...mapState(useLoggedInUserStore, ["user"]),
-		currentUser() {
-			return this.user
-			//return this.$store.state.auth.user;
-		},
+
+export default defineComponent({
+	setup() {
+		onMounted(() => {
+			if (!currentUser) router.push("/login")
+		})
+		const router = useRouter()
+		const userStore = useLoggedInUserStore()
+		const currentUser = userStore.user
+
+		return { currentUser }
 	},
-	mounted() {
-		if (!this.currentUser) {
-			this.$router.push("/login")
-		}
-	},
-}
+})
 </script>

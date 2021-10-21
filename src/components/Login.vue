@@ -38,55 +38,47 @@
 	</div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref } from "vue"
+import { useRouter } from "vue-router"
 import { Form, Field, ErrorMessage } from "vee-validate"
 import * as yup from "yup"
-import { mapState, mapActions } from "pinia"
 import { useLoggedInUserStore } from "@/store/loggedInUser"
-export default {
-	name: "Login",
+
+export default defineComponent({
 	components: {
 		Form,
 		Field,
 		ErrorMessage,
 	},
-	data() {
-		const schema = yup.object().shape({
-			username: yup.string().required("Username is required!"),
-			password: yup.string().required("Password is required!"),
-		})
+	setup() {
+		const router = useRouter()
 
-		return {
-			loading: false,
-			message: "",
-			schema,
-		}
-	},
-	computed: {
-		...mapState(useLoggedInUserStore, ["status"]),
-		loggedIn() {
-			return this.status.loggedIn
-			//return this.$store.state.auth.status.loggedIn;
-		},
-	},
-	created() {
-		if (this.loggedIn) {
-			this.$router.push("/profile")
-		}
-	},
-	methods: {
-		...mapActions(useLoggedInUserStore, ["login"]),
-		handleLogin(user) {
-			this.loading = true
+		const schema = ref(
+			yup.object().shape({
+				username: yup.string().required("Username is required!"),
+				password: yup.string().required("Password is required!"),
+			})
+		)
+		const loading = ref(false)
+		const message = ref("")
 
-			this.login(user).then(
+		const userStore = useLoggedInUserStore()
+		const loggedIn = userStore.status.loggedIn
+
+		if (loggedIn) router.push("/profile")
+
+		const handleLogin = (user: { email: string; password: string }) => {
+			loading.value = true
+
+			userStore.login(user).then(
 				//this.$store.dispatch("auth/login", user).then(
 				() => {
-					this.$router.push("/profile")
+					router.push("/profile")
 				},
 				(error) => {
-					this.loading = false
-					this.message =
+					loading.value = false
+					message.value =
 						(error.response &&
 							error.response.data &&
 							error.response.data.message) ||
@@ -94,9 +86,11 @@ export default {
 						error.toString()
 				}
 			)
-		},
+		}
+
+		return { schema, loading, message, loggedIn, handleLogin }
 	},
-}
+})
 </script>
 
 <style scoped>

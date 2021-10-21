@@ -15,33 +15,33 @@ export const useLoggedInUserStore = defineStore({
 		return state
 	},
 	actions: {
-		login(user: any) {
-			return AuthService.login(user).then(
+		login(userCred: any) {
+			return AuthService.login(userCred).then(
 				(user) => {
-					state.status.loggedIn = true
-					state.user = user
+					this.status.loggedIn = true
+					this.user = user
 					return Promise.resolve(user)
 				},
 				(error) => {
-					state.status.loggedIn = false
-					state.user = null
+					this.status.loggedIn = false
+					this.user = null
 					return Promise.reject(error)
 				}
 			)
 		},
 		logout() {
 			AuthService.logout()
-			state.status.loggedIn = false
-			state.user = null
+			this.status.loggedIn = false
+			this.user = null
 		},
 		register(user: any) {
 			return AuthService.register(user).then(
 				(response) => {
-					state.status.loggedIn = false
+					this.status.loggedIn = false
 					return Promise.resolve(response.data)
 				},
 				(error) => {
-					state.status.loggedIn = false
+					this.status.loggedIn = false
 					return Promise.reject(error)
 				}
 			)

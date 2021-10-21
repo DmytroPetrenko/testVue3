@@ -55,38 +55,38 @@
 	</div>
 </template>
 
-<script>
-import { mapState, mapActions } from "pinia"
+<script lang="ts">
+import { defineComponent, computed } from "vue"
+import { useRouter } from "vue-router"
 import { useLoggedInUserStore } from "@/store/loggedInUser"
-export default {
-	computed: {
-		...mapState(useLoggedInUserStore, ["user"]),
-		currentUser() {
-			return this.user
-			//return this.$store.state.auth.user
-		},
-		showAdminBoard() {
-			if (this.currentUser && this.currentUser["roles"]) {
-				return this.currentUser["roles"].includes("ROLE_ADMIN")
+export default defineComponent({
+	setup() {
+		const router = useRouter()
+		const userStore = useLoggedInUserStore()
+		const currentUser = computed(() => {
+			return userStore.user
+		})
+		console.log(currentUser.value)
+		const showAdminBoard = computed(() => {
+			if (currentUser.value && currentUser.value["roles"]) {
+				return currentUser.value["roles"].includes("ROLE_ADMIN")
 			}
 
 			return false
-		},
-		showModeratorBoard() {
-			if (this.currentUser && this.currentUser["roles"]) {
-				return this.currentUser["roles"].includes("ROLE_MODERATOR")
+		})
+		const showModeratorBoard = computed(() => {
+			if (currentUser.value && currentUser.value["roles"]) {
+				return currentUser.value["roles"].includes("ROLE_MODERATOR")
 			}
 
 			return false
-		},
+		})
+		const logOut = () => {
+			userStore.logout()
+			router.push("/login")
+		}
+
+		return { currentUser, showAdminBoard, showModeratorBoard, logOut }
 	},
-	methods: {
-		...mapActions(useLoggedInUserStore, ["logout"]),
-		logOut() {
-			this.logout()
-			//this.$store.dispatch("auth/logout")
-			this.$router.push("/login")
-		},
-	},
-}
+})
 </script>

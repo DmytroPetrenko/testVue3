@@ -1,35 +1,34 @@
 <template>
-  <div class="container">
-    <header class="jumbotron">
-      <h3>{{ content }}</h3>
-    </header>
-  </div>
+	<div class="container">
+		<header class="jumbotron">
+			<h3>{{ content }}</h3>
+		</header>
+	</div>
 </template>
 
-<script>
-import UserService from "../services/user.service";
+<script lang="ts">
+import { defineComponent, onMounted, ref } from "vue"
+import UserService from "../services/user.service"
 
-export default {
-  name: "User",
-  data() {
-    return {
-      content: "",
-    };
-  },
-  mounted() {
-    UserService.getUserBoard().then(
-      (response) => {
-        this.content = response.data;
-      },
-      (error) => {
-        this.content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-      }
-    );
-  },
-};
+export default defineComponent({
+	setup() {
+		onMounted(() => {
+			UserService.getUserBoard().then(
+				(response) => {
+					content.value = response.data
+				},
+				(error) => {
+					content.value =
+						(error.response &&
+							error.response.data &&
+							error.response.data.message) ||
+						error.message ||
+						error.toString()
+				}
+			)
+		})
+		const content = ref("")
+		return { content }
+	},
+})
 </script>
