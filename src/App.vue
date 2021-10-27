@@ -1,7 +1,7 @@
 <template>
 	<div id="app">
 		<nav class="navbar navbar-expand navbar-dark bg-dark">
-			<a href="/" class="navbar-brand">bezKoder</a>
+			<a href="/" class="navbar-brand">logo</a>
 			<div class="navbar-nav mr-auto">
 				<li class="nav-item">
 					<router-link to="/home" class="nav-link">
@@ -66,7 +66,6 @@ export default defineComponent({
 		const currentUser = computed(() => {
 			return userStore.user
 		})
-		console.log(currentUser.value)
 		const showAdminBoard = computed(() => {
 			if (currentUser.value && currentUser.value["roles"]) {
 				return currentUser.value["roles"].includes("ROLE_ADMIN")

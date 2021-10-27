@@ -1,7 +1,8 @@
 import { defineStore } from "pinia"
 import AuthService from "../services/auth.service"
+import AuthUserService from "../services/authUser.service"
 
-let user = null
+let user: any = null
 const item = localStorage.getItem("user")
 if (typeof item === "string") user = JSON.parse(item)
 
@@ -15,8 +16,8 @@ export const useLoggedInUserStore = defineStore({
 		return state
 	},
 	actions: {
-		login(userCred: any) {
-			return AuthService.login(userCred).then(
+		async login(userCred: any) {
+			/* return AuthService.login(userCred).then(
 				(user) => {
 					this.status.loggedIn = true
 					this.user = user
@@ -27,7 +28,18 @@ export const useLoggedInUserStore = defineStore({
 					this.user = null
 					return Promise.reject(error)
 				}
-			)
+			) */
+			try {
+				const userFromDb = await AuthService.login(userCred)
+				this.status.loggedIn = true
+				this.user = userFromDb
+
+				return Promise.resolve(user)
+			} catch (error) {
+				this.status.loggedIn = false
+				this.user = null
+				return Promise.reject(error)
+			}
 		},
 		logout() {
 			AuthService.logout()
@@ -45,6 +57,12 @@ export const useLoggedInUserStore = defineStore({
 					return Promise.reject(error)
 				}
 			)
+		},
+		changeUserPropValue(name: string, value: string) {
+			this.user[name] = value
+		},
+		saveUserDataChanges() {
+			AuthUserService.saveUserDataChanges(this.user)
 		},
 	},
 })
