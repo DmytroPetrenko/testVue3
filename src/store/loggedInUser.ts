@@ -17,18 +17,6 @@ export const useLoggedInUserStore = defineStore({
 	},
 	actions: {
 		async login(userCred: any) {
-			/* return AuthService.login(userCred).then(
-				(user) => {
-					this.status.loggedIn = true
-					this.user = user
-					return Promise.resolve(user)
-				},
-				(error) => {
-					this.status.loggedIn = false
-					this.user = null
-					return Promise.reject(error)
-				}
-			) */
 			try {
 				const userFromDb = await AuthService.login(userCred)
 				this.status.loggedIn = true
@@ -60,6 +48,9 @@ export const useLoggedInUserStore = defineStore({
 		},
 		changeUserPropValue(name: string, value: string) {
 			this.user[name] = value
+		},
+		changeUserAvatar(ava: any) {
+			this.user.img = ava
 		},
 		saveUserDataChanges() {
 			AuthUserService.saveUserDataChanges(this.user)

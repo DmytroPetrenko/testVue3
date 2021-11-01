@@ -10,6 +10,10 @@ class ImageService {
 			},
 		})
 	}
+	async getAllImagesNames() {
+		const response = await axios.get(API_URL + "getAllImagesNames")
+		return response.data
+	}
 }
 
 export default new ImageService()

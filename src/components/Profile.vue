@@ -1,24 +1,36 @@
 <template>
 	<div v-if="currentUser" class="container">
 		<header class="jumbotron">
-			<h3>
+			<h3 class="header-text">
 				<strong>{{ userForShow.username }}</strong> Profile
 			</h3>
-			<div v-if="currentUser.img.name">
-				<img :src="`http://localhost:8080/${currentUser.img.name}`" />
+			<div v-if="currentUser.img.name" class="avatar-container">
+				<img
+					:src="`http://localhost:8080/${currentUser.img.name}`"
+					class="avatar"
+					@click="showModalImages"
+				/>
+				<image-switcher-modal
+					v-if="isModalActive"
+					@closeModal="showModalImages"
+				/>
 			</div>
 		</header>
-		<div v-for="(value, name, index) in userForShow" :key="name">
-			<ul v-if="isStringType(value) && value.length">
-				<li>{{ name }}:</li>
-				<li v-if="index !== activeInputIndex">
+		<div
+			v-for="(value, name, index) in userForShow"
+			:key="name"
+			class="user-info"
+		>
+			<ul v-if="isStringType(value) && value.length" class="user-list">
+				<li class="user-list-item item-header">{{ name }}:</li>
+				<li v-if="index !== activeInputIndex" class="user-list-item">
 					{{ value }}
 					<font-awesome-icon
 						icon="pencil-alt"
 						@click="showPropInput({ index, value })"
 					/>
 				</li>
-				<li v-show="index === activeInputIndex">
+				<li v-show="index === activeInputIndex" class="user-list-item">
 					<input
 						v-model="input"
 						:ref="
@@ -32,9 +44,9 @@
 					/>
 				</li>
 			</ul>
-			<ul v-if="value === null || undefined || !value.length">
-				<li>{{ name }}:</li>
-				<li v-if="index !== activeInputIndex">
+			<ul v-if="value === null || undefined || !value.length" class="user-list">
+				<li class="user-list-item item-header">{{ name }}:</li>
+				<li v-if="index !== activeInputIndex" class="user-list-item">
 					<span class="helper-info" @click="showPropInput({ index, value })">
 						Input some data here
 					</span>
@@ -43,7 +55,7 @@
 						@click="showPropInput({ index, value })"
 					/>
 				</li>
-				<li v-show="index === activeInputIndex">
+				<li v-show="index === activeInputIndex" class="user-list-item">
 					<input
 						v-model="input"
 						:ref="
@@ -57,14 +69,14 @@
 					/>
 				</li>
 			</ul>
-			<ul v-if="isArr(value)">
-				<li>
+			<ul v-if="isArr(value)" class="user-list">
+				<li class="user-list-item item-header">
 					{{ name }}:
 					<span v-for="str in value" :key="str">{{ str }}</span>
 				</li>
 			</ul>
 		</div>
-		<button @click="saveUserDataChanges">Save</button>
+		<button @click="saveUserDataChanges" class="save-changes-btn">Save</button>
 	</div>
 </template>
 
@@ -72,8 +84,10 @@
 import { computed, defineComponent, onMounted, ref, onBeforeUpdate } from "vue"
 import { useRouter } from "vue-router"
 import { useLoggedInUserStore } from "@/store/loggedInUser"
+import ImageSwitcherModal from "@/components/ImageSwitcherModal.vue"
 
 export default defineComponent({
+	components: { ImageSwitcherModal },
 	setup() {
 		onMounted(() => {
 			if (!currentUser) router.push("/login")
@@ -87,6 +101,7 @@ export default defineComponent({
 		const activeInputIndex = ref(999)
 		const input = ref("")
 		const inputElements = ref([])
+		const isModalActive = ref(false)
 		const userForShow = computed(() => {
 			const output: any = { ...currentUser }
 			delete output.id
@@ -101,6 +116,7 @@ export default defineComponent({
 		const isStringType = (value: any) => {
 			return typeof value === "string"
 		}
+
 		const showPropInput = (data: { index: number; value: string }) => {
 			activeInputIndex.value = data.index
 			input.value = data.value
@@ -114,6 +130,9 @@ export default defineComponent({
 		const saveUserDataChanges = () => {
 			userStore.saveUserDataChanges()
 		}
+		const showModalImages = () => {
+			isModalActive.value = !isModalActive.value
+		}
 
 		return {
 			currentUser,
@@ -121,19 +140,63 @@ export default defineComponent({
 			activeInputIndex,
 			input,
 			inputElements,
+			isModalActive,
 			isArr,
 			isStringType,
 			showPropInput,
 			blurEventHandler,
 			saveUserDataChanges,
+			showModalImages,
 		}
 	},
 })
 </script>
 
 <style lang="scss" scoped>
-.helper-info {
-	color: grey;
-	opacity: 0.6;
+.container {
+	.jumbotron {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: space-between;
+
+		.header-text {
+		}
+
+		.avatar-container {
+			.avatar {
+				max-width: 250px;
+				max-height: 250px;
+			}
+		}
+	}
+	.user-info {
+		.user-list {
+			padding: 0;
+
+			.user-list-item {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+
+				.helper-info {
+					color: grey;
+					opacity: 0.6;
+				}
+			}
+
+			.item-header {
+				text-transform: uppercase;
+			}
+		}
+	}
+	.save-changes-btn {
+		border: none;
+		border-radius: 5px;
+		padding: 10px 40px;
+		color: white;
+		background-color: green;
+		text-transform: uppercase;
+	}
 }
 </style>

@@ -10,6 +10,7 @@ class AuthUserService {
 		name: string
 		surname: string
 		university: string
+		img: any
 	}) {
 		return axios
 			.post(API_URL + "edit", {
@@ -19,6 +20,7 @@ class AuthUserService {
 					name: user.name,
 					surname: user.surname,
 					university: user.university,
+					imgId: user.img.id
 				},
 				id: user.id,
 			})
