@@ -1,5 +1,5 @@
 <template>
-	<div id="modal">
+	<base-modal>
 		<div class="container" @click.self="closeModal">
 			<ul class="image-list">
 				<li v-for="ava in avatars" :key="ava.name" class="image-element">
@@ -11,14 +11,16 @@
 				</li>
 			</ul>
 		</div>
-	</div>
+	</base-modal>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue"
 import { useImagesStore } from "@/store/images"
 import { useLoggedInUserStore } from "@/store/loggedInUser"
+import BaseModal from "@/components/Base/BaseModal.vue"
 
 export default defineComponent({
+	components: { BaseModal },
 	props: {},
 	emits: ["closeModal"],
 	setup(props, context) {
@@ -41,40 +43,32 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-#modal {
-	position: absolute;
-	top: 0;
-	left: 0;
-	background: rgba(0, 0, 0, 0.6);
+.container {
 	width: 100%;
-	height: 100%;
-	.container {
-		width: 100%;
-		height: 100vh;
-		margin: 0;
-		.image-list {
-			position: absolute;
-			padding: 20px;
-			left: 50%;
-			top: 50%;
-			-webkit-transform: translateX(-50%) translateY(-50%);
-			transform: translateX(-50%) translateY(-50%);
-			width: 400px;
-			height: 400px;
-			max-width: 100%;
-			max-height: 100%;
-			background: rgba(255, 255, 255, 1);
-			display: flex;
-			flex-wrap: wrap;
+	height: 100vh;
+	margin: 0;
+	.image-list {
+		position: absolute;
+		padding: 20px;
+		left: 50%;
+		top: 50%;
+		-webkit-transform: translateX(-50%) translateY(-50%);
+		transform: translateX(-50%) translateY(-50%);
+		width: 400px;
+		height: 400px;
+		max-width: 100%;
+		max-height: 100%;
+		background: rgba(255, 255, 255, 1);
+		display: flex;
+		flex-wrap: wrap;
 
-			.image-element {
-				list-style-type: none;
-				padding: 10px;
-				.image {
-					max-width: 100px;
-					max-height: 100px;
-					cursor: pointer;
-				}
+		.image-element {
+			list-style-type: none;
+			padding: 10px;
+			.image {
+				max-width: 100px;
+				max-height: 100px;
+				cursor: pointer;
 			}
 		}
 	}

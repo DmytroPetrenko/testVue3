@@ -72,7 +72,6 @@ export default defineComponent({
 			loading.value = true
 
 			userStore.login(user).then(
-				//this.$store.dispatch("auth/login", user).then(
 				() => {
 					router.push("/profile")
 				},

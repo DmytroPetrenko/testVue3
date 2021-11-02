@@ -11,6 +11,9 @@ export const useImagesStore = defineStore({
 		return { avatarImagesNames }
 	},
 	actions: {
+		getAvatarImagesNamesLength() {
+			return this.avatarImagesNames ? this.avatarImagesNames.length : 0
+		},
 		async getAllImagesNames() {
 			try {
 				const images = await ImageService.getAllImagesNames()

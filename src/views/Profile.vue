@@ -11,7 +11,8 @@
 					@click="showModalImages"
 				/>
 				<image-switcher-modal
-					v-if="isModalActive"
+					v-if="isModalImagesActive"
+					:key="avatarImagesNamesLength"
 					@closeModal="showModalImages"
 				/>
 			</div>
@@ -70,9 +71,9 @@
 				</li>
 			</ul>
 			<ul v-if="isArr(value)" class="user-list">
-				<li class="user-list-item item-header">
+				<li v-if="name === 'games'" class="user-list-item item-header">
 					{{ name }}:
-					<span v-for="str in value" :key="str">{{ str }}</span>
+					<user-game v-for="str in value" :key="str" :game="str" />
 				</li>
 			</ul>
 		</div>
@@ -85,9 +86,11 @@ import { computed, defineComponent, onMounted, ref, onBeforeUpdate } from "vue"
 import { useRouter } from "vue-router"
 import { useLoggedInUserStore } from "@/store/loggedInUser"
 import ImageSwitcherModal from "@/components/ImageSwitcherModal.vue"
+import UserGame from "@/components/UserGame.vue"
+import { useImagesStore } from "@/store/images"
 
 export default defineComponent({
-	components: { ImageSwitcherModal },
+	components: { ImageSwitcherModal, UserGame },
 	setup() {
 		onMounted(() => {
 			if (!currentUser) router.push("/login")
@@ -97,11 +100,18 @@ export default defineComponent({
 		})
 		const router = useRouter()
 		const userStore = useLoggedInUserStore()
+		const imagesStore = useImagesStore()
+
 		const currentUser = userStore.user
+		const avatarImagesNamesLength = computed(() => {
+			return imagesStore.getAvatarImagesNamesLength()
+		})
+
 		const activeInputIndex = ref(999)
 		const input = ref("")
 		const inputElements = ref([])
-		const isModalActive = ref(false)
+		const isModalImagesActive = ref(false)
+		const isModalTeamsInGameActive = ref(false)
 		const userForShow = computed(() => {
 			const output: any = { ...currentUser }
 			delete output.id
@@ -131,16 +141,18 @@ export default defineComponent({
 			userStore.saveUserDataChanges()
 		}
 		const showModalImages = () => {
-			isModalActive.value = !isModalActive.value
+			isModalImagesActive.value = !isModalImagesActive.value
 		}
 
 		return {
 			currentUser,
+			avatarImagesNamesLength,
 			userForShow,
 			activeInputIndex,
 			input,
 			inputElements,
-			isModalActive,
+			isModalImagesActive,
+			isModalTeamsInGameActive,
 			isArr,
 			isStringType,
 			showPropInput,
@@ -159,9 +171,6 @@ export default defineComponent({
 		flex-direction: row;
 		flex-wrap: nowrap;
 		justify-content: space-between;
-
-		.header-text {
-		}
 
 		.avatar-container {
 			.avatar {
